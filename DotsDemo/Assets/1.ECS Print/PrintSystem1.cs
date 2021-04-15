@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(InitializationSystemGroup)), DisableAutoCreation]
 public class PrintSystem1 : ComponentSystem
 {
     protected override void OnUpdate()
@@ -16,7 +16,7 @@ public class PrintSystem1 : ComponentSystem
     }
 }
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(SimulationSystemGroup)), DisableAutoCreation]
 public class PrintSystem2 : ComponentSystem
 {
     protected override void OnUpdate()
@@ -29,7 +29,7 @@ public class PrintSystem2 : ComponentSystem
     }
 }
 
-[UpdateInGroup(typeof(PresentationSystemGroup))]
+[UpdateInGroup(typeof(PresentationSystemGroup)), DisableAutoCreation]
 public class PrintSystem3 : ComponentSystem
 {
     protected override void OnUpdate()

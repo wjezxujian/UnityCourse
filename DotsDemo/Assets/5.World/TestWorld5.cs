@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class TestWorld5 : MonoBehaviour
@@ -77,21 +76,40 @@ public class TestWorld5 : MonoBehaviour
             Debug.Log("查询实体索引：" + item.Index);
         }
 
-       
+
 
         //删除
         //entityManager.DestroyEntity(entity);
+        //entityManager.DestroyEntity(entitis);
+        #endregion
 
-        entityManager.DestroyEntity(entitis);
+        #region Component
+        //1.组件的创建方式
+        Entity entity2 = entityManager.CreateEntity(typeof(RotationEulerXYZ));
+        entityManager.AddComponent(entity2, typeof(PrintComponentData1));
+        //entityManager.AddComponent<PrintComponentData1>(entites2);
+        //entityManager.AddComponent<PrintComponentData1>(entityQuery);
+        entityManager.AddComponents(entity2, new ComponentTypes(typeof(PrintComponentData1), typeof(RotationEulerXYZ)));
+        entityManager.AddComponentData(entity2, new PrintComponentData1 { printData = 5 });
 
+        //2.组件的查询
+        RotationEulerXYZ rotationEulerXYZ = entityManager.GetComponentData<RotationEulerXYZ>(entity2);
+        Debug.Log(rotationEulerXYZ);
+
+
+        //3.组件的修改
+        //rotationEulerXYZ.Value = new float3(-1, -1, -1); //错误类型，这是struct类型
+        entityManager.SetComponentData<RotationEulerXYZ>(entity2, new RotationEulerXYZ() { Value = new float3(-55, -1, -1) });
+
+        //4.组件的删除
+        entityManager.RemoveComponent(entity2, typeof(RotationEulerXYZ));
+
+
+        #endregion
 
         nativeArray.Dispose();
         entitis.Dispose();
         entites2.Dispose();
-
-        #endregion
-
-
     }
 
 

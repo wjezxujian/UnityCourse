@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+[DisableAutoCreation]
 public class JobComponentSystem4 : JobComponentSystem
 {
     protected override JobHandle OnUpdate(JobHandle inputDeps)
