@@ -11,6 +11,7 @@ public class PrintSystem1 : ComponentSystem
         Debug.Log("PrintSystem1");
         Entities.ForEach((ref PrintComponentData1 printComponentData1) =>
         {
+            printComponentData1.printData++;
             Debug.Log(printComponentData1.printData);
         });
     }
