@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using UniRx.InternalUtil;
 using UnityEngine;
 
 namespace UniRx
 {
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class IntReactiveProperty : ReactiveProperty<int>
@@ -23,7 +25,7 @@ namespace UniRx
     }
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class LongReactiveProperty : ReactiveProperty<long>
@@ -43,7 +45,7 @@ namespace UniRx
 
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class ByteReactiveProperty : ReactiveProperty<byte>
@@ -62,7 +64,7 @@ namespace UniRx
     }
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class FloatReactiveProperty : ReactiveProperty<float>
@@ -81,7 +83,7 @@ namespace UniRx
     }
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class DoubleReactiveProperty : ReactiveProperty<double>
@@ -100,7 +102,7 @@ namespace UniRx
     }
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class StringReactiveProperty : ReactiveProperty<string>
@@ -119,7 +121,7 @@ namespace UniRx
     }
 
     /// <summary>
-    /// <para>Inspectable ReactiveProperty.</para>
+    /// Inspectable ReactiveProperty.
     /// </summary>
     [Serializable]
     public class BoolReactiveProperty : ReactiveProperty<bool>
@@ -151,6 +153,14 @@ namespace UniRx
         {
 
         }
+
+        protected override IEqualityComparer<Vector2> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Vector2;
+            }
+        }
     }
 
     /// <summary>Inspectable ReactiveProperty.</summary>
@@ -166,6 +176,14 @@ namespace UniRx
             : base(initialValue)
         {
 
+        }
+
+        protected override IEqualityComparer<Vector3> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Vector3;
+            }
         }
     }
 
@@ -183,6 +201,14 @@ namespace UniRx
         {
 
         }
+
+        protected override IEqualityComparer<Vector4> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Vector4;
+            }
+        }
     }
 
     /// <summary>Inspectable ReactiveProperty.</summary>
@@ -199,6 +225,14 @@ namespace UniRx
         {
 
         }
+
+        protected override IEqualityComparer<Color> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Color;
+            }
+        }
     }
 
     /// <summary>Inspectable ReactiveProperty.</summary>
@@ -214,6 +248,14 @@ namespace UniRx
             : base(initialValue)
         {
 
+        }
+
+        protected override IEqualityComparer<Rect> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Rect;
+            }
         }
     }
 
@@ -247,6 +289,14 @@ namespace UniRx
         {
 
         }
+
+        protected override IEqualityComparer<Bounds> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Bounds;
+            }
+        }
     }
 
     /// <summary>Inspectable ReactiveProperty.</summary>
@@ -262,6 +312,14 @@ namespace UniRx
             : base(initialValue)
         {
 
+        }
+
+        protected override IEqualityComparer<Quaternion> EqualityComparer
+        {
+            get
+            {
+                return UnityEqualityComparer.Quaternion;
+            }
         }
     }
 }

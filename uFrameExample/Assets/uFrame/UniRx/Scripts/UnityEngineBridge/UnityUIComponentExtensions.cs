@@ -11,22 +11,22 @@ namespace UniRx
     {
         public static IDisposable SubscribeToText(this IObservable<string> source, Text text)
         {
-            return source.Subscribe(x => text.text = x);
+            return source.SubscribeWithState(text, (x, t) => t.text = x);
         }
 
         public static IDisposable SubscribeToText<T>(this IObservable<T> source, Text text)
         {
-            return source.Subscribe(x => text.text = x.ToString());
+            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
         }
 
         public static IDisposable SubscribeToText<T>(this IObservable<T> source, Text text, Func<T, string> selector)
         {
-            return source.Subscribe(x => text.text = selector(x));
+            return source.SubscribeWithState2(text, selector, (x, t, s) => t.text = s(x));
         }
 
-        public static IDisposable SubscribeToInteractable(this IObservable<bool> source, UnityEngine.UI.Selectable selectable)
+        public static IDisposable SubscribeToInteractable(this IObservable<bool> source, Selectable selectable)
         {
-            return source.Subscribe(x => selectable.interactable = x);
+            return source.SubscribeWithState(selectable, (x, s) => s.interactable = x);
         }
 
         /// <summary>Observe onClick event.</summary>
@@ -39,40 +39,40 @@ namespace UniRx
         public static IObservable<bool> OnValueChangedAsObservable(this Toggle toggle)
         {
             // Optimized Defer + StartWith
-            return Observable.Create<bool>(observer =>
+            return Observable.CreateWithState<bool, Toggle>(toggle, (t, observer) =>
             {
-                observer.OnNext(toggle.isOn);
-                return toggle.onValueChanged.AsObservable().Subscribe(observer);
+                observer.OnNext(t.isOn);
+                return t.onValueChanged.AsObservable().Subscribe(observer);
             });
         }
 
         /// <summary>Observe onValueChanged with current `value` on subscribe.</summary>
         public static IObservable<float> OnValueChangedAsObservable(this Scrollbar scrollbar)
         {
-            return Observable.Create<float>(observer =>
+            return Observable.CreateWithState<float, Scrollbar>(scrollbar, (s, observer) =>
             {
-                observer.OnNext(scrollbar.value);
-                return scrollbar.onValueChanged.AsObservable().Subscribe(observer);
+                observer.OnNext(s.value);
+                return s.onValueChanged.AsObservable().Subscribe(observer);
             });
         }
 
         /// <summary>Observe onValueChanged with current `normalizedPosition` value on subscribe.</summary>
         public static IObservable<Vector2> OnValueChangedAsObservable(this ScrollRect scrollRect)
         {
-            return Observable.Create<Vector2>(observer =>
+            return Observable.CreateWithState<Vector2, ScrollRect>(scrollRect, (s, observer) =>
             {
-                observer.OnNext(scrollRect.normalizedPosition);
-                return scrollRect.onValueChanged.AsObservable().Subscribe(observer);
+                observer.OnNext(s.normalizedPosition);
+                return s.onValueChanged.AsObservable().Subscribe(observer);
             });
         }
 
         /// <summary>Observe onValueChanged with current `value` on subscribe.</summary>
         public static IObservable<float> OnValueChangedAsObservable(this Slider slider)
         {
-            return Observable.Create<float>(observer =>
+            return Observable.CreateWithState<float, Slider>(slider, (s, observer) =>
             {
-                observer.OnNext(slider.value);
-                return slider.onValueChanged.AsObservable().Subscribe(observer);
+                observer.OnNext(s.value);
+                return s.onValueChanged.AsObservable().Subscribe(observer);
             });
         }
 
@@ -82,15 +82,41 @@ namespace UniRx
             return inputField.onEndEdit.AsObservable();
         }
 
+#if (UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2)
         /// <summary>Observe onValueChange with current `text` value on subscribe.</summary>
         public static IObservable<string> OnValueChangeAsObservable(this InputField inputField)
         {
-            return Observable.Create<string>(observer =>
+            return Observable.CreateWithState<string, InputField>(inputField, (i, observer) =>
             {
-                observer.OnNext(inputField.text);
-                return inputField.onValueChange.AsObservable().Subscribe(observer);
+                observer.OnNext(i.text);
+                return i.onValueChange.AsObservable().Subscribe(observer);
             });
         }
+#else
+        /// <summary>Observe onValueChanged with current `text` value on subscribe.</summary>
+        public static IObservable<string> OnValueChangedAsObservable(this InputField inputField)
+        {
+            return Observable.CreateWithState<string, InputField>(inputField, (i, observer) =>
+            {
+                observer.OnNext(i.text);
+                return i.onValueChanged.AsObservable().Subscribe(observer);
+            });
+        }
+#endif
+
+#if UNITY_5_3_OR_NEWER
+
+        /// <summary>Observe onValueChanged with current `value` on subscribe.</summary>
+        public static IObservable<int> OnValueChangedAsObservable(this Dropdown dropdown)
+        {
+            return Observable.CreateWithState<int, Dropdown>(dropdown, (d, observer) =>
+            {
+                observer.OnNext(d.value);
+                return d.onValueChanged.AsObservable().Subscribe(observer);
+            });
+        }
+
+#endif
     }
 }
 
