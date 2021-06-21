@@ -4,12 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System.Linq;
+using BindingsRx.Bindings;
 
 public class UIToDoList : MonoBehaviour
 {
     UIToDoItem todoItemPrefab;
     UIInputCtrl inputCtrl;
     GameObject eventMaskObj;
+
+    List<UIToDoItem> uiTodoItems = new List<UIToDoItem>();
 
 
     [SerializeField]
@@ -28,62 +31,74 @@ public class UIToDoList : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        inputCtrl.mode.Subscribe(mode =>
-        {
-            if (mode == Mode.Add)
-            {
-                eventMaskObj.SetActive(false);
-            }
-            else
-            {
-                eventMaskObj.SetActive(true);
-            }
-        });
+        //eventMaskObj.BindActiveTo(() => inputCtrl.mode.Value != Mode.Add, resultValue => { }, BindingsRx.BindingTypes.OneWay);
+        //eventMaskObj.BindActiveTo(inputCtrl.mode.Select(x => x != Mode.Add).ToReactiveProperty());
+        eventMaskObj.BindActiveTo(inputCtrl.mode, x => x != Mode.Add);
+        
+
+        //inputCtrl.mode.Subscribe(mode =>
+        //{
+        //    if (mode == Mode.Add)
+        //    {
+        //        eventMaskObj.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        eventMaskObj.SetActive(true);
+        //    }
+        //});
 
         Model = ToDoList.Load();
         inputCtrl.Model = Model;
         Debug.Log(JsonUtility.ToJson(Model));
 
-        var todoItems = Model.toDoItems;
-
-        Model.toDoItems.ObserveEveryValueChanged((items) => items.Count).Subscribe(_ => { 
-            OnDataChange(); 
+        Model.TodoItemsCollection.Where(toDoItem => !toDoItem.Completed.Value).ToList().ForEach(todoItem =>
+        {
+            AddTodoItem(todoItem);
         });
-        OnDataChange();
+
+        Model.TodoItemsCollection.ObserveAdd().DelayFrame(1).Subscribe(addEvent =>
+        {
+            AddTodoItem(addEvent.Value);
+        });
+
+        Model.TodoItemsCollection.ObserveRemove().Subscribe(removeEvent =>
+        {
+            //TODO 改成 在这里销毁GameObject
+            Model.Save();
+        });
     }
 
-    private void OnDataChange()
+    private void AddTodoItem(ToDoItem todoItem)
     {
-        for(int i = 0; i < Content.childCount; ++i)
-        {
-           Destroy(Content.GetChild(i).gameObject);
-        }
+        var item = Instantiate(todoItemPrefab);
+        item.transform.SetParent(Content);
+        item.transform.localScale = Vector3.one;
+        item.gameObject.SetActive(true);
 
+        item.SetModel(todoItem);
 
-        Model.toDoItems.Where(toDoItem => !toDoItem.Completed.Value).ToList().ForEach(todoItem =>
-        {
-            todoItem.Completed.Subscribe(completed =>
-            {
-                if (completed) OnDataChange();
-            });
-            var item = Instantiate(todoItemPrefab);
-            item.transform.SetParent(Content);
-            item.transform.localScale = Vector3.one;
-            item.gameObject.SetActive(true);
+        item.selfBtn.OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        //todoItem.Content.Subscribe(_ =>
+                        //{
+                        //    OnDataChange();
+                        //});
+                        inputCtrl.EditModel(todoItem);
+                    });
 
-            item.SetModel(todoItem);
+        //todoItem.Completed.Where(completed => completed).Subscribe(_ => {
+        //    Destroy(item.gameObject);
+        //}).AddTo(item);
 
-            item.selfBtn.OnClickAsObservable()
-                        .Subscribe(_ =>
-                        {
-                            //todoItem.Content.Subscribe(_ =>
-                            //{
-                            //    OnDataChange();
-                            //});
-                            inputCtrl.EditModel(todoItem);
-                        });
-        });
+        //todoItem.Completed.Subscribe(completed =>
+        //{
+        //    if (completed) OnDataChange();
+        //}).AddTo(item);
 
-        Model.Save();
+        //todoItem.Completed.Where(completed => completed).Subscribe(_ => OnDataChange()).AddTo(item);
+
+        uiTodoItems.Add(item);
     }
 }

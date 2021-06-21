@@ -17,9 +17,18 @@ public class ToDoList
 {
     public int TopId = 2;
 
+    public ToDoList()
+    {
+        TodoItemsCollection = new ReactiveCollection<ToDoItem>();
+
+        TodoItemsCollection.ObserveAdd().Subscribe(item => toDoItems.Add(item.Value));
+        TodoItemsCollection.ObserveRemove().Subscribe(item => toDoItems.Remove(item.Value));
+        //TodoItemsCollection.ObserveReplace().Subscribe(item => toDoItems.Replace(item.Value));
+    }
+
     public void Add(string content)
     {
-        toDoItems.Add(new ToDoItem()
+        TodoItemsCollection.Add(new ToDoItem()
         {
             Id = TopId++,
             Content = new StringReactiveProperty(content),
@@ -29,7 +38,7 @@ public class ToDoList
 
 
     [SerializeField]
-    public List<ToDoItem> toDoItems = new List<ToDoItem>()
+    private List<ToDoItem> toDoItems = new List<ToDoItem>()
     {
         new ToDoItem()
         {
@@ -45,6 +54,8 @@ public class ToDoList
         }
     };
 
+    public ReactiveCollection<ToDoItem> TodoItemsCollection;
+
     public void Save()
     {
         PlayerPrefs.SetString("model", JsonUtility.ToJson(this));
@@ -53,14 +64,38 @@ public class ToDoList
     internal static ToDoList Load()
     {
         var jsonContent = PlayerPrefs.GetString("model", string.Empty);
+
+        ToDoList returnList = null;
+
         if(string.IsNullOrEmpty(jsonContent))
         {
-            return new ToDoList();
+            returnList = new ToDoList();
         }
         else
         {
-            return JsonUtility.FromJson<ToDoList>(jsonContent);
+            returnList = JsonUtility.FromJson<ToDoList>(jsonContent);
         }
+
+        returnList.toDoItems.ForEach(item =>
+        {
+            item.Completed.Where(completed => completed).Subscribe(_ => returnList.Save());
+            item.Content.Subscribe(_ => returnList.Save());
+        });
+
+        returnList.TodoItemsCollection = new ReactiveCollection<ToDoItem>(returnList.toDoItems);
+        returnList.TodoItemsCollection.ObserveAdd().Subscribe(item => {
+            returnList.toDoItems.Add(item.Value);
+            returnList.Save();
+            item.Value.Completed.Where(completed => completed).Subscribe(_ => returnList.Save());
+            item.Value.Content.Subscribe(_ => returnList.Save());
+        });
+        returnList.TodoItemsCollection.ObserveRemove().Subscribe(item => {
+            returnList.toDoItems.Remove(item.Value);
+            returnList.Save();
+        });
+
+
+        return returnList;
         
     }
 }

@@ -7,6 +7,12 @@ namespace BindingsRx.Bindings
 {
     public static class GameObjectExtensions
     {
+        public static IDisposable BindActiveTo<T>(this GameObject input, IObservable<T> observable, Func<T, bool> selector, BindingTypes bindingType = BindingTypes.Default, params IFilter<bool>[] filters)
+        { return GenericBindings.Bind(() => input.activeSelf, input.SetActive, observable.Select(selector).ToReactiveProperty(), bindingType, filters).AddTo(input); }
+
+        public static IDisposable BindActiveTo(this GameObject input, IReadOnlyReactiveProperty<bool> property, BindingTypes bindingType = BindingTypes.Default, params IFilter<bool>[] filters)
+        { return GenericBindings.Bind(() => input.activeSelf, input.SetActive, property, bindingType, filters).AddTo(input); }
+
         public static IDisposable BindActiveTo(this GameObject input, IReactiveProperty<bool> property, BindingTypes bindingType = BindingTypes.Default, params IFilter<bool>[] filters)
         { return GenericBindings.Bind(() => input.activeSelf, input.SetActive, property, bindingType, filters).AddTo(input); }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using BindingsRx.Bindings;
 
 public enum Mode
 {
@@ -27,8 +28,6 @@ public class UIInputCtrl : MonoBehaviour
         btnAdd = transform.Find("BtnAdd").GetComponent<Button>();
         btnUpdate = transform.Find("BtnUpdate").GetComponent<Button>();
         btnCancel = transform.Find("BtnCancel").GetComponent<Button>();
-
-        AddModel();
     }
 
     // Start is called before the first frame update
@@ -53,24 +52,31 @@ public class UIInputCtrl : MonoBehaviour
         btnUpdate.OnClickAsObservable().Subscribe(_ =>
         {
             mCachedTodoItem.Content.Value = inputContent.text;
-            AddModel();
+            mode.Value = Mode.Add;
         });
 
         btnCancel.OnClickAsObservable().Subscribe(_ =>
         {
-            AddModel();
+            mode.Value = Mode.Add;
         });
-    }
 
-    public void AddModel()
-    {
-        mCachedContent = string.Empty;
-        inputContent.text = string.Empty;
-        mCachedTodoItem = null;
-        btnAdd.gameObject.SetActive(true);
-        btnUpdate.gameObject.SetActive(false);
-        btnCancel.gameObject.SetActive(false);
-        mode.Value = global::Mode.Add;
+        var addStateReactiveProperty = mode.Select(mode => mode == Mode.Add).ToReactiveProperty();
+        var editStateReactiveProperty = mode.Select(mode => mode == Mode.Edit).ToReactiveProperty();
+
+        addStateReactiveProperty.Where(isAddState => isAddState).Subscribe(_ => {
+            mCachedContent = string.Empty;
+            inputContent.text = string.Empty;
+            mCachedTodoItem = null;
+        }).AddTo(this);
+
+        editStateReactiveProperty.Where(isEditState => isEditState).Subscribe(_ =>
+        {
+            inputContent.text = mCachedTodoItem.Content.Value;
+        }).AddTo(this);
+
+        btnAdd.gameObject.BindActiveTo(addStateReactiveProperty);
+        btnUpdate.gameObject.BindActiveTo(editStateReactiveProperty);
+        btnCancel.gameObject.BindActiveTo(editStateReactiveProperty);
     }
 
     string mCachedContent = string.Empty;
@@ -80,11 +86,7 @@ public class UIInputCtrl : MonoBehaviour
     {
         mCachedTodoItem = item;
         mCachedContent = item.Content.Value;
-        inputContent.text = item.Content.Value;
-        btnAdd.gameObject.SetActive(false);
-        btnUpdate.gameObject.SetActive(true);
-        btnCancel.gameObject.SetActive(true);
-        mode.Value = global::Mode.Edit;
+        mode.Value = Mode.Edit;
     }
 
     // Update is called once per frame

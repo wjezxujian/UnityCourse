@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using BindingsRx.Bindings;
+using System;
 
 public class UIToDoItem : MonoBehaviour
 {
@@ -20,39 +22,39 @@ public class UIToDoItem : MonoBehaviour
         btnCompleted = transform.Find("BtnComplete").GetComponent<Button>();
         selfBtn = GetComponent<Button>();
 
-        btnCompleted.OnClickAsObservable().Subscribe(_ => {
-            Model.Completed.Value = true;
-        });
+        //btnCompleted.OnClickAsObservable().Subscribe(_ => {
+        //    Model.Completed.Value = true;
+        //    Destroy(gameObject);
+        //});
 
         selfBtn.OnClickAsObservable().Subscribe(_ =>
         {
             Debug.Log("btnClicked");
         });
+
+        
+
     }
 
     public void SetModel(ToDoItem model)
     {
         Model = model;
 
-        UpdateView(Model.Content.Value);
+        content.BindTextTo(model.Content);
 
-        Model.Content.Subscribe(UpdateView).AddTo(this);
+        Model.Completed.BindValueToButtonOnClick(btnCompleted, () =>
+        {
+            Destroy(gameObject);
+            return true;
+        });
+
+        //UpdateView(Model.Content.Value);
+
+        //Model.Content.Subscribe(UpdateView).AddTo(this);
     }
 
-    public void UpdateView(string context)
-    {
-        content.text = context;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //public void UpdateView(string context)
+    //{
+    //    content.text = context;
+    //}
 }

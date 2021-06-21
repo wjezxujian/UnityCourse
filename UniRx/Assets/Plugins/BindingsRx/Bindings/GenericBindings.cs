@@ -9,6 +9,29 @@ namespace BindingsRx.Bindings
 {
     public static class GenericBindings
     {
+        public static IDisposable Bind<T>(IObservable<T> observable, Action<T> propertySetter, BindingTypes bindingTypes = BindingTypes.OneWay, params IFilter<T>[] filters)
+        {
+            var propertyBBinding = observable
+                .ApplyInputFilters(filters)
+                .DistinctUntilChanged()
+                .Subscribe(propertySetter);
+
+
+            return propertyBBinding;
+        }
+
+
+        public static IDisposable Bind<T>(Func<T> propertyAGetter, Action<T> propertyASetter, IReadOnlyReactiveProperty<T> propertyB, BindingTypes bindingTypes = BindingTypes.OneWay, params IFilter<T>[] filters)
+        {
+            var propertyBBinding = propertyB
+                .ApplyInputFilters(filters)
+                .DistinctUntilChanged()
+                .Subscribe(propertyASetter);
+
+
+            return propertyBBinding;
+        }
+
         public static IDisposable Bind<T>(IReactiveProperty<T> propertyA , IReactiveProperty<T> propertyB, BindingTypes bindingTypes = BindingTypes.Default, params IFilter<T>[] filters)
         {
             var propertyBBinding = propertyB
