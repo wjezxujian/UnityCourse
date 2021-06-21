@@ -229,12 +229,12 @@ namespace uFrame.Serialization {
         {
             AsVector2 = value;
         }
-//#if UNITY_DLL
+#if UNITY_DLL
         public JSONData(Quaternion value)
         {
             AsQuaternion = value;
         }
-//#endif
+#endif
 
         public JSONData(string aData)
         {
@@ -526,7 +526,7 @@ namespace uFrame.Serialization {
     }
     public class JSONNode
     {
-        #region common interface
+#region common interface
 
         public virtual IEnumerable<JSONNode> Childs { get { yield break; } }
 
@@ -582,9 +582,9 @@ namespace uFrame.Serialization {
             return "JSONNode";
         }
 
-        #endregion common interface
+#endregion common interface
 
-        #region typecasting properties
+#region typecasting properties
 
         public virtual JSONArray AsArray
         {
@@ -662,8 +662,8 @@ namespace uFrame.Serialization {
                 return this as JSONClass;
             }
         }
-		
-//#if UNITY_DLL || UNITY_4_0 || UNITY_4_1||UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_3_0 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_6
+
+#if UNITY_DLL || UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_3_0 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_6 || UNITY_2021_1_OR_NEWER
         public virtual Quaternion AsQuaternion
         {
             get
@@ -679,7 +679,7 @@ namespace uFrame.Serialization {
                 ob.Add("z", new JSONData(euler.z));
             }
         }
-//#endif
+#endif
         public virtual Vector2 AsVector2
         {
             get
@@ -730,9 +730,9 @@ namespace uFrame.Serialization {
             }
         }
 
-        #endregion typecasting properties
+#endregion typecasting properties
 
-        #region operators
+#region operators
 
         public static implicit operator JSONNode(string s)
         {
@@ -766,7 +766,7 @@ namespace uFrame.Serialization {
             return base.GetHashCode();
         }
 
-        #endregion operators
+#endregion operators
 
         public static JSONNode Deserialize(System.IO.BinaryReader aReader)
         {

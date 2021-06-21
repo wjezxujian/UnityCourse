@@ -1,4 +1,4 @@
-//#if UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#if UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_2021_1_OR_NEWER
 using System;
 using UniRx;
 using UnityEngine;
@@ -476,7 +476,7 @@ namespace uFrame.MVVM.Bindings
             return Observable.Create<BaseEventData>(observer =>
             {
                 var entry = ComposeEntry(type, observer.OnNext);
-#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2021_1_OR_NEWER
                 trigger.triggers.Add(entry);
                 return Disposable.Create(() => trigger.triggers.Remove(entry));
 #else
@@ -503,4 +503,4 @@ namespace uFrame.MVVM.Bindings
     }
 }
 
-//#endif
+#endif
