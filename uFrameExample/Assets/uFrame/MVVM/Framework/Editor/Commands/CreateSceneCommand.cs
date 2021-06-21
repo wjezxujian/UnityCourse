@@ -157,21 +157,21 @@ public class ScaffoldOrUpdateKernelCommand : ToolbarCommand<DiagramViewModel>
 
     private static Transform SyncKernel(DiagramViewModel node, GameObject uFrameMVVMKernel)
     {
-        var servicesContainer = uFrameMVVMKernel.transform.FindChild("Services");
+        var servicesContainer = uFrameMVVMKernel.transform.Find("Services");
         if (servicesContainer == null)
         {
             servicesContainer = new GameObject("Services").transform;
             servicesContainer.SetParent(uFrameMVVMKernel.transform);
         }
 
-        var systemLoadersContainer = uFrameMVVMKernel.transform.FindChild("SystemLoaders");
+        var systemLoadersContainer = uFrameMVVMKernel.transform.Find("SystemLoaders");
         if (systemLoadersContainer == null)
         {
             systemLoadersContainer = new GameObject("SystemLoaders").transform;
             systemLoadersContainer.SetParent(uFrameMVVMKernel.transform);
         }
 
-        var sceneLoaderContainer = uFrameMVVMKernel.transform.FindChild("SceneLoaders");
+        var sceneLoaderContainer = uFrameMVVMKernel.transform.Find("SceneLoaders");
         if (sceneLoaderContainer == null)
         {
             sceneLoaderContainer = new GameObject("SceneLoaders").transform;

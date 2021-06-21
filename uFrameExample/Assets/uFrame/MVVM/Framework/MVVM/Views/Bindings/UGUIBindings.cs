@@ -1,4 +1,4 @@
-#if UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+//#if UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
 using System;
 using UniRx;
 using UnityEngine;
@@ -480,8 +480,8 @@ namespace uFrame.MVVM.Bindings
                 trigger.triggers.Add(entry);
                 return Disposable.Create(() => trigger.triggers.Remove(entry));
 #else
-                trigger.delegates.Add(entry);
-                return Disposable.Create(() => trigger.delegates.Remove(entry));
+                trigger.triggers.Add(entry);
+                return Disposable.Create(() => trigger.triggers.Remove(entry));
 #endif
             });
         }
@@ -503,4 +503,4 @@ namespace uFrame.MVVM.Bindings
     }
 }
 
-#endif
+//#endif
