@@ -663,7 +663,7 @@ namespace uFrame.Serialization {
             }
         }
 		
-#if UNITY_DLL || UNITY_4_0 || UNITY_4_1||UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_3_0 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_6
+#if UNITY_DLL || UNITY_4_0 || UNITY_4_1||UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_3_0 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_6 || UNITY_2017_1_OR_NEWER
         public virtual Quaternion AsQuaternion
         {
             get
