@@ -17,6 +17,8 @@ namespace UniRx
                 graphic.RegisterDirtyLayoutCallback(registerHandler);
                 return Disposable.Create(() => graphic.UnregisterDirtyLayoutCallback(registerHandler));
             });
+
+            var graph = UnityEngine.ScriptableObject.CreateInstance<UnityGraphData>();
         }
 
         public static IObservable<Unit> DirtyMaterialCallbackAsObservable(this Graphic graphic)
