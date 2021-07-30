@@ -32,13 +32,31 @@ namespace Example {
             TodoList.OnBtnAddClicked.OnNext(new OnBtnAddClickedCommand() { Sender = TodoList });
         }
         
+        public virtual void ExecuteBtnShowFinishedListCllicked() {
+            TodoList.BtnShowFinishedListCllicked.OnNext(new BtnShowFinishedListCllickedCommand() { Sender = TodoList });
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked() {
+            TodoList.BtnShowTodoListClicked.OnNext(new BtnShowTodoListClickedCommand() { Sender = TodoList });
+        }
+        
         public virtual void ExecuteOnBtnAddClicked(OnBtnAddClickedCommand command) {
             command.Sender = TodoList;
             TodoList.OnBtnAddClicked.OnNext(command);
         }
+        
+        public virtual void ExecuteBtnShowFinishedListCllicked(BtnShowFinishedListCllickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowFinishedListCllicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked(BtnShowTodoListClickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowTodoListClicked.OnNext(command);
+        }
     }
     
-    public class TodoItemViewBase : uFrame.MVVM.ViewComponent {
+    public class TodoItemViewComponentBase : uFrame.MVVM.ViewComponent {
         
         public virtual TodoListViewModel TodoList {
             get {
@@ -50,9 +68,27 @@ namespace Example {
             TodoList.OnBtnAddClicked.OnNext(new OnBtnAddClickedCommand() { Sender = TodoList });
         }
         
+        public virtual void ExecuteBtnShowFinishedListCllicked() {
+            TodoList.BtnShowFinishedListCllicked.OnNext(new BtnShowFinishedListCllickedCommand() { Sender = TodoList });
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked() {
+            TodoList.BtnShowTodoListClicked.OnNext(new BtnShowTodoListClickedCommand() { Sender = TodoList });
+        }
+        
         public virtual void ExecuteOnBtnAddClicked(OnBtnAddClickedCommand command) {
             command.Sender = TodoList;
             TodoList.OnBtnAddClicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnShowFinishedListCllicked(BtnShowFinishedListCllickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowFinishedListCllicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked(BtnShowTodoListClickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowTodoListClicked.OnNext(command);
         }
     }
 }

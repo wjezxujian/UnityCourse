@@ -22,6 +22,12 @@ namespace Example {
         
         private TodoListController _TodoListController;
         
+        private TodoItemController _TodoItemController;
+        
+        private TodoEditorController _TodoEditorController;
+        
+        private EventMaskController _EventMaskController;
+        
         [uFrame.IOC.InjectAttribute()]
         public virtual TodoListController TodoListController {
             get {
@@ -35,9 +41,54 @@ namespace Example {
             }
         }
         
+        [uFrame.IOC.InjectAttribute()]
+        public virtual TodoItemController TodoItemController {
+            get {
+                if (_TodoItemController==null) {
+                    _TodoItemController = Container.CreateInstance(typeof(TodoItemController)) as TodoItemController;;
+                }
+                return _TodoItemController;
+            }
+            set {
+                _TodoItemController = value;
+            }
+        }
+        
+        [uFrame.IOC.InjectAttribute()]
+        public virtual TodoEditorController TodoEditorController {
+            get {
+                if (_TodoEditorController==null) {
+                    _TodoEditorController = Container.CreateInstance(typeof(TodoEditorController)) as TodoEditorController;;
+                }
+                return _TodoEditorController;
+            }
+            set {
+                _TodoEditorController = value;
+            }
+        }
+        
+        [uFrame.IOC.InjectAttribute()]
+        public virtual EventMaskController EventMaskController {
+            get {
+                if (_EventMaskController==null) {
+                    _EventMaskController = Container.CreateInstance(typeof(EventMaskController)) as EventMaskController;;
+                }
+                return _EventMaskController;
+            }
+            set {
+                _EventMaskController = value;
+            }
+        }
+        
         public override void Load() {
             Container.RegisterViewModelManager<TodoListViewModel>(new ViewModelManager<TodoListViewModel>());
             Container.RegisterController<TodoListController>(TodoListController);
+            Container.RegisterViewModelManager<TodoItemViewModel>(new ViewModelManager<TodoItemViewModel>());
+            Container.RegisterController<TodoItemController>(TodoItemController);
+            Container.RegisterViewModelManager<TodoEditorViewModel>(new ViewModelManager<TodoEditorViewModel>());
+            Container.RegisterController<TodoEditorController>(TodoEditorController);
+            Container.RegisterViewModelManager<EventMaskViewModel>(new ViewModelManager<EventMaskViewModel>());
+            Container.RegisterController<EventMaskController>(EventMaskController);
         }
     }
 }

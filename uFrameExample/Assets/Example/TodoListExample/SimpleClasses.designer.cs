@@ -17,6 +17,7 @@ namespace Example {
     using uFrame.MVVM;
     using uFrame.MVVM.Bindings;
     using uFrame.Serialization;
+    using Example;
     
     
     public class TodoItemBase : object {
@@ -40,6 +41,34 @@ namespace Example {
             }
             set {
                 _Finished = value;
+            }
+        }
+    }
+    
+    public class PageTypeChangedCommandBase : object {
+        
+        private PageType _PageType;
+        
+        public PageType PageType {
+            get {
+                return _PageType;
+            }
+            set {
+                _PageType = value;
+            }
+        }
+    }
+    
+    public class ItemClickedChangeComandBase : object {
+        
+        private TodoItemViewModel _TodoItem;
+        
+        public TodoItemViewModel TodoItem {
+            get {
+                return _TodoItem;
+            }
+            set {
+                _TodoItem = value;
             }
         }
     }

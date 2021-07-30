@@ -17,14 +17,14 @@ namespace Example
     public class TodoListView : TodoListViewBase
     {
 
-        public override void TodoItemsOnAdd(TodoItem arg1)
+        public override void TodoItemsOnAdd(TodoItemViewModel arg1)
         {
             Debug.Log("add: " + arg1);
 
             UpdateView();
         }
 
-        public override void TodoItemsOnRemove(TodoItem arg1)
+        public override void TodoItemsOnRemove(TodoItemViewModel arg1)
         {
             Debug.Log("remove: " + arg1);
 
@@ -44,12 +44,15 @@ namespace Example
 
             foreach (var todoItem in TodoList.TodoItems)
             {
-                if (!todoItem.Finished)
+                if ((!todoItem.Finished && TodoList.PageType == PageType.TodoList) || (TodoList.PageType == PageType.FinishedList && todoItem.Finished))
                 {
-                    var obj = Instantiate(this.TodoItemView.gameObject, this.TodoItemsContentView.transform);
+                    var obj = Instantiate(this.TodoItemViewComponent.gameObject, this.TodoItemsContentView.transform);
+
+                    obj.GetView<TodoItemView>().ViewModelObject = todoItem;
+                    obj.GetView<TodoItemView>().UpdatePageType(TodoList.PageType);
                     obj.SetActive(true);
-                    obj.GetComponent<TodoItemView>().Init(todoItem);
                 }
+                
 
                 //todoTextBuilder.Append(todoItem.Content).Append("\t").AppendLine(todoItem.Finished ? "已完成" : "未完成");
             }
@@ -65,7 +68,7 @@ namespace Example
             // var vm = model as TodoListElementViewModel;
             // This method is invoked when applying the data from the inspector to the viewmodel.  Add any view-specific customizations here.
 
-
+            
         }
 
         public override void Bind()
@@ -74,6 +77,15 @@ namespace Example
             // Use this.TodoListElement to access the viewmodel.
             // Use this method to subscribe to the view-model.
             // Any designer bindings are created in the base implementation.
+
+            UpdatePageType();
+
+            this.TodoList.PageTypeProperty.ChangedObservable.Subscribe(type =>
+            {
+                UpdatePageType();
+
+                Debug.Log(type);
+            });
 
             _OnBtnAddClickedButton.interactable = false;
 
@@ -91,6 +103,22 @@ namespace Example
             //});
 
             //TodoItemView.Instantiate(this).name ="@@@@";
+        }
+
+        void UpdatePageType()
+        {
+            if (TodoList.PageType == PageType.TodoList)
+            {
+                _BtnShowFinishedListCllickedButton.gameObject.SetActive(true);
+                _BtnShowTodoListClickedButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                _BtnShowFinishedListCllickedButton.gameObject.SetActive(false);
+                _BtnShowTodoListClickedButton.gameObject.SetActive(true);
+            }
+
+            UpdateView();
         }
     }
 }

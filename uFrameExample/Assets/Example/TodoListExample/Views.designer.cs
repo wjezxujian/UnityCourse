@@ -29,12 +29,27 @@ namespace Example {
         private TodoItemsContentView _TodoItemsContentView;
         
         [UnityEngine.SerializeField()]
-        private TodoItemView _TodoItemView;
+        private TodoItemViewComponent _TodoItemViewComponent;
         
         [UnityEngine.SerializeField()]
         [UFGroup("View Model Properties")]
         [UnityEngine.HideInInspector()]
         public String _TodoContent;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public PageType _PageType;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public uFrame.MVVM.ViewBase _TodoEditor;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public uFrame.MVVM.ViewBase _EventMask;
         
         [UFToggleGroup("TodoItems")]
         [UnityEngine.HideInInspector()]
@@ -60,6 +75,26 @@ namespace Example {
         [UnityEngine.Serialization.FormerlySerializedAsAttribute("_TodoContentinput")]
         protected UnityEngine.UI.InputField _TodoContentInput;
         
+        [UFToggleGroup("BtnShowFinishedListCllicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindBtnShowFinishedListCllicked = true;
+        
+        [UFGroup("BtnShowFinishedListCllicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_BtnShowFinishedListCllickedbutton")]
+        protected UnityEngine.UI.Button _BtnShowFinishedListCllickedButton;
+        
+        [UFToggleGroup("BtnShowTodoListClicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindBtnShowTodoListClicked = true;
+        
+        [UFGroup("BtnShowTodoListClicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_BtnShowTodoListClickedbutton")]
+        protected UnityEngine.UI.Button _BtnShowTodoListClickedButton;
+        
         public override string DefaultIdentifier {
             get {
                 return base.DefaultIdentifier;
@@ -84,9 +119,9 @@ namespace Example {
             }
         }
         
-        public virtual TodoItemView TodoItemView {
+        public virtual TodoItemViewComponent TodoItemViewComponent {
             get {
-                return _TodoItemView ?? (_TodoItemView = this.gameObject.EnsureComponent<TodoItemView>());
+                return _TodoItemViewComponent ?? (_TodoItemViewComponent = this.gameObject.EnsureComponent<TodoItemViewComponent>());
             }
         }
         
@@ -97,6 +132,9 @@ namespace Example {
             // This method is invoked when applying the data from the inspector to the viewmodel.  Add any view-specific customizations here.
             var todolistview = ((TodoListViewModel)model);
             todolistview.TodoContent = this._TodoContent;
+            todolistview.PageType = this._PageType;
+            todolistview.TodoEditor = this._TodoEditor == null ? null :  ViewService.FetchViewModel(this._TodoEditor) as TodoEditorViewModel;
+            todolistview.EventMask = this._EventMask == null ? null :  ViewService.FetchViewModel(this._EventMask) as EventMaskViewModel;
         }
         
         public override void Bind() {
@@ -113,21 +151,407 @@ namespace Example {
             if (_BindTodoContent) {
                 this.BindInputFieldToProperty(_TodoContentInput, this.TodoList.TodoContentProperty);
             }
+            if (_BindBtnShowFinishedListCllicked) {
+                this.BindButtonToCommand(_BtnShowFinishedListCllickedButton, this.TodoList.BtnShowFinishedListCllicked);
+            }
+            if (_BindBtnShowTodoListClicked) {
+                this.BindButtonToCommand(_BtnShowTodoListClickedButton, this.TodoList.BtnShowTodoListClicked);
+            }
         }
         
-        public virtual void TodoItemsOnAdd(TodoItem arg1) {
+        public virtual void TodoItemsOnAdd(TodoItemViewModel arg1) {
         }
         
-        public virtual void TodoItemsOnRemove(TodoItem arg1) {
+        public virtual void TodoItemsOnRemove(TodoItemViewModel arg1) {
         }
         
         public virtual void ExecuteOnBtnAddClicked() {
             TodoList.OnBtnAddClicked.OnNext(new OnBtnAddClickedCommand() { Sender = TodoList });
         }
         
+        public virtual void ExecuteBtnShowFinishedListCllicked() {
+            TodoList.BtnShowFinishedListCllicked.OnNext(new BtnShowFinishedListCllickedCommand() { Sender = TodoList });
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked() {
+            TodoList.BtnShowTodoListClicked.OnNext(new BtnShowTodoListClickedCommand() { Sender = TodoList });
+        }
+        
         public virtual void ExecuteOnBtnAddClicked(OnBtnAddClickedCommand command) {
             command.Sender = TodoList;
             TodoList.OnBtnAddClicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnShowFinishedListCllicked(BtnShowFinishedListCllickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowFinishedListCllicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnShowTodoListClicked(BtnShowTodoListClickedCommand command) {
+            command.Sender = TodoList;
+            TodoList.BtnShowTodoListClicked.OnNext(command);
+        }
+    }
+    
+    public class TodoItemViewBase : uFrame.MVVM.ViewBase {
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public String _Content;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public Boolean _Finished;
+        
+        [UFToggleGroup("Content")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindContent = true;
+        
+        [UFGroup("Content")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_Contentinput")]
+        protected UnityEngine.UI.Text _ContentInput;
+        
+        [UFToggleGroup("BtnFinishClicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindBtnFinishClicked = true;
+        
+        [UFGroup("BtnFinishClicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_BtnFinishClickedbutton")]
+        protected UnityEngine.UI.Button _BtnFinishClickedButton;
+        
+        [UFToggleGroup("Finished")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindFinished = true;
+        
+        [UFGroup("Finished")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_FinishedonlyWhenChanged")]
+        protected bool _FinishedOnlyWhenChanged;
+        
+        [UFToggleGroup("BtnRestoreClicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindBtnRestoreClicked = true;
+        
+        [UFGroup("BtnRestoreClicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_BtnRestoreClickedbutton")]
+        protected UnityEngine.UI.Button _BtnRestoreClickedButton;
+        
+        [UFToggleGroup("BtnDeleteClicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindBtnDeleteClicked = true;
+        
+        [UFGroup("BtnDeleteClicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_BtnDeleteClickedbutton")]
+        protected UnityEngine.UI.Button _BtnDeleteClickedButton;
+        
+        [UFToggleGroup("TodoItemClicked")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindTodoItemClicked = true;
+        
+        [UFGroup("TodoItemClicked")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_TodoItemClickedbutton")]
+        protected UnityEngine.UI.Button _TodoItemClickedButton;
+        
+        public override string DefaultIdentifier {
+            get {
+                return base.DefaultIdentifier;
+            }
+        }
+        
+        public override System.Type ViewModelType {
+            get {
+                return typeof(TodoItemViewModel);
+            }
+        }
+        
+        public TodoItemViewModel TodoItem {
+            get {
+                return (TodoItemViewModel)ViewModelObject;
+            }
+        }
+        
+        protected override void InitializeViewModel(uFrame.MVVM.ViewModel model) {
+            base.InitializeViewModel(model);
+            // NOTE: this method is only invoked if the 'Initialize ViewModel' is checked in the inspector.
+            // var vm = model as TodoItemViewModel;
+            // This method is invoked when applying the data from the inspector to the viewmodel.  Add any view-specific customizations here.
+            var todoitemview = ((TodoItemViewModel)model);
+            todoitemview.Content = this._Content;
+            todoitemview.Finished = this._Finished;
+        }
+        
+        public override void Bind() {
+            base.Bind();
+            // Use this.TodoItem to access the viewmodel.
+            // Use this method to subscribe to the view-model.
+            // Any designer bindings are created in the base implementation.
+            if (_BindContent) {
+                this.BindTextToProperty(_ContentInput, this.TodoItem.ContentProperty);
+            }
+            if (_BindBtnFinishClicked) {
+                this.BindButtonToCommand(_BtnFinishClickedButton, this.TodoItem.BtnFinishClicked);
+            }
+            if (_BindFinished) {
+                this.BindProperty(this.TodoItem.FinishedProperty, this.FinishedChanged, _FinishedOnlyWhenChanged);
+            }
+            if (_BindBtnRestoreClicked) {
+                this.BindButtonToCommand(_BtnRestoreClickedButton, this.TodoItem.BtnRestoreClicked);
+            }
+            if (_BindBtnDeleteClicked) {
+                this.BindButtonToCommand(_BtnDeleteClickedButton, this.TodoItem.BtnDeleteClicked);
+            }
+            if (_BindTodoItemClicked) {
+                this.BindButtonToCommand(_TodoItemClickedButton, this.TodoItem.TodoItemClicked);
+            }
+        }
+        
+        public virtual void FinishedChanged(Boolean arg1) {
+        }
+        
+        public virtual void ExecuteBtnFinishClicked() {
+            TodoItem.BtnFinishClicked.OnNext(new BtnFinishClickedCommand() { Sender = TodoItem });
+        }
+        
+        public virtual void ExecuteBtnRestoreClicked() {
+            TodoItem.BtnRestoreClicked.OnNext(new BtnRestoreClickedCommand() { Sender = TodoItem });
+        }
+        
+        public virtual void ExecuteBtnDeleteClicked() {
+            TodoItem.BtnDeleteClicked.OnNext(new BtnDeleteClickedCommand() { Sender = TodoItem });
+        }
+        
+        public virtual void ExecuteTodoItemClicked() {
+            TodoItem.TodoItemClicked.OnNext(new TodoItemClickedCommand() { Sender = TodoItem });
+        }
+        
+        public virtual void ExecuteBtnFinishClicked(BtnFinishClickedCommand command) {
+            command.Sender = TodoItem;
+            TodoItem.BtnFinishClicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnRestoreClicked(BtnRestoreClickedCommand command) {
+            command.Sender = TodoItem;
+            TodoItem.BtnRestoreClicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteBtnDeleteClicked(BtnDeleteClickedCommand command) {
+            command.Sender = TodoItem;
+            TodoItem.BtnDeleteClicked.OnNext(command);
+        }
+        
+        public virtual void ExecuteTodoItemClicked(TodoItemClickedCommand command) {
+            command.Sender = TodoItem;
+            TodoItem.TodoItemClicked.OnNext(command);
+        }
+    }
+    
+    public class TodoEditorViewBase : uFrame.MVVM.ViewBase {
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public String _TodoContent;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public TodoEditorState _State;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public uFrame.MVVM.ViewBase _TodoItem;
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public String _OriginContent;
+        
+        [UFToggleGroup("Add")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindAdd = true;
+        
+        [UFGroup("Add")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_Addbutton")]
+        protected UnityEngine.UI.Button _AddButton;
+        
+        [UFToggleGroup("Cancle")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindCancle = true;
+        
+        [UFGroup("Cancle")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_Canclebutton")]
+        protected UnityEngine.UI.Button _CancleButton;
+        
+        [UFToggleGroup("Modify")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindModify = true;
+        
+        [UFGroup("Modify")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_Modifybutton")]
+        protected UnityEngine.UI.Button _ModifyButton;
+        
+        [UFToggleGroup("TodoContent")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindTodoContent = true;
+        
+        [UFGroup("TodoContent")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_TodoContentinput")]
+        protected UnityEngine.UI.InputField _TodoContentInput;
+        
+        public override string DefaultIdentifier {
+            get {
+                return base.DefaultIdentifier;
+            }
+        }
+        
+        public override System.Type ViewModelType {
+            get {
+                return typeof(TodoEditorViewModel);
+            }
+        }
+        
+        public TodoEditorViewModel TodoEditor {
+            get {
+                return (TodoEditorViewModel)ViewModelObject;
+            }
+        }
+        
+        protected override void InitializeViewModel(uFrame.MVVM.ViewModel model) {
+            base.InitializeViewModel(model);
+            // NOTE: this method is only invoked if the 'Initialize ViewModel' is checked in the inspector.
+            // var vm = model as TodoEditorViewModel;
+            // This method is invoked when applying the data from the inspector to the viewmodel.  Add any view-specific customizations here.
+            var todoeditorview = ((TodoEditorViewModel)model);
+            todoeditorview.TodoContent = this._TodoContent;
+            todoeditorview.State = this._State;
+            todoeditorview.TodoItem = this._TodoItem == null ? null :  ViewService.FetchViewModel(this._TodoItem) as TodoItemViewModel;
+            todoeditorview.OriginContent = this._OriginContent;
+        }
+        
+        public override void Bind() {
+            base.Bind();
+            // Use this.TodoEditor to access the viewmodel.
+            // Use this method to subscribe to the view-model.
+            // Any designer bindings are created in the base implementation.
+            if (_BindAdd) {
+                this.BindButtonToCommand(_AddButton, this.TodoEditor.Add);
+            }
+            if (_BindCancle) {
+                this.BindButtonToCommand(_CancleButton, this.TodoEditor.Cancle);
+            }
+            if (_BindModify) {
+                this.BindButtonToCommand(_ModifyButton, this.TodoEditor.Modify);
+            }
+            if (_BindTodoContent) {
+                this.BindInputFieldToProperty(_TodoContentInput, this.TodoEditor.TodoContentProperty);
+            }
+        }
+        
+        public virtual void ExecuteModify() {
+            TodoEditor.Modify.OnNext(new ModifyCommand() { Sender = TodoEditor });
+        }
+        
+        public virtual void ExecuteCancle() {
+            TodoEditor.Cancle.OnNext(new CancleCommand() { Sender = TodoEditor });
+        }
+        
+        public virtual void ExecuteAdd() {
+            TodoEditor.Add.OnNext(new AddCommand() { Sender = TodoEditor });
+        }
+        
+        public virtual void ExecuteModify(ModifyCommand command) {
+            command.Sender = TodoEditor;
+            TodoEditor.Modify.OnNext(command);
+        }
+        
+        public virtual void ExecuteCancle(CancleCommand command) {
+            command.Sender = TodoEditor;
+            TodoEditor.Cancle.OnNext(command);
+        }
+        
+        public virtual void ExecuteAdd(AddCommand command) {
+            command.Sender = TodoEditor;
+            TodoEditor.Add.OnNext(command);
+        }
+    }
+    
+    public class EventMaskViewBase : uFrame.MVVM.ViewBase {
+        
+        [UnityEngine.SerializeField()]
+        [UFGroup("View Model Properties")]
+        [UnityEngine.HideInInspector()]
+        public PageMode _PageMode;
+        
+        [UFToggleGroup("PageMode")]
+        [UnityEngine.HideInInspector()]
+        public bool _BindPageMode = true;
+        
+        [UFGroup("PageMode")]
+        [UnityEngine.SerializeField()]
+        [UnityEngine.HideInInspector()]
+        [UnityEngine.Serialization.FormerlySerializedAsAttribute("_PageModeonlyWhenChanged")]
+        protected bool _PageModeOnlyWhenChanged;
+        
+        public override string DefaultIdentifier {
+            get {
+                return base.DefaultIdentifier;
+            }
+        }
+        
+        public override System.Type ViewModelType {
+            get {
+                return typeof(EventMaskViewModel);
+            }
+        }
+        
+        public EventMaskViewModel EventMask {
+            get {
+                return (EventMaskViewModel)ViewModelObject;
+            }
+        }
+        
+        protected override void InitializeViewModel(uFrame.MVVM.ViewModel model) {
+            base.InitializeViewModel(model);
+            // NOTE: this method is only invoked if the 'Initialize ViewModel' is checked in the inspector.
+            // var vm = model as EventMaskViewModel;
+            // This method is invoked when applying the data from the inspector to the viewmodel.  Add any view-specific customizations here.
+            var eventmaskview = ((EventMaskViewModel)model);
+            eventmaskview.PageMode = this._PageMode;
+        }
+        
+        public override void Bind() {
+            base.Bind();
+            // Use this.EventMask to access the viewmodel.
+            // Use this method to subscribe to the view-model.
+            // Any designer bindings are created in the base implementation.
+            if (_BindPageMode) {
+                this.BindProperty(this.EventMask.PageModeProperty, this.PageModeChanged, _PageModeOnlyWhenChanged);
+            }
+        }
+        
+        public virtual void PageModeChanged(PageMode arg1) {
         }
     }
 }

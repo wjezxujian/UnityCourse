@@ -20,4 +20,31 @@ namespace Example {
     
     public partial class OnBtnAddClickedCommand : uFrame.MVVM.ViewModelCommand {
     }
+    
+    public partial class BtnShowFinishedListCllickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class BtnShowTodoListClickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class BtnFinishClickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class BtnRestoreClickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class BtnDeleteClickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class TodoItemClickedCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class ModifyCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class CancleCommand : uFrame.MVVM.ViewModelCommand {
+    }
+    
+    public partial class AddCommand : uFrame.MVVM.ViewModelCommand {
+    }
 }
