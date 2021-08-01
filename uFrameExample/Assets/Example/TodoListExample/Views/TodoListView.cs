@@ -17,7 +17,7 @@ namespace Example
     public class TodoListView : TodoListViewBase
     {
 
-        public override void TodoItemsOnAdd(TodoItemViewModel arg1)
+        public override void TodoItemsOnAdd(TodoItemViewModel arg1) 
         {
             Debug.Log("add: " + arg1);
 
