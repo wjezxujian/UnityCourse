@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1942191683, guid: 665e7007641162d49b570cba8a539e2d, type: 3}
+  m_Name: Example
+  m_EditorClassIdentifier: 
+  _settingsKeys: []
+  _settingsValues: 
+  _diagrams:
+  - {fileID: 11400000, guid: 60b70a95b826f934780c50e7636f2d83, type: 2}
+  _projectNamespace: Example
+  _currentTabs:
+  - _graphIdentifier: 0a096a19-1d5b-4b05-87e9-56c205995c8b
+    _graphName: NewUnityGraphData
+    _path: []
