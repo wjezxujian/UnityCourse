@@ -1,0 +1,22 @@
+﻿<skills>
+	<skill>
+		<id>1</id>
+		<name lang="cn">永恒零度</name>
+		<damage>111</damage>
+	</skill>
+	<skill>
+		<id>2</id>
+		<name  lang="cn">天下无双</name>
+		<damage>123</damage>
+	</skill>
+	<skill>
+		<id>3</id>
+		<name  lang="cn">罗衫浪子</name>
+		<damage>999</damage>
+	</skill>
+	<skill>
+		<id>4</id>
+		<name  lang="en">swordxu</name>
+		<damage>666</damage>
+	</skill>
+</skills>
